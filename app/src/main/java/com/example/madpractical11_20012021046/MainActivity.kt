@@ -1,18 +1,21 @@
 package com.example.madpractical11_20012021046
 
 import android.os.Build
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.madpractical11_20012021046.databinding.ActivityMainBinding
-import com.example.madpractical11_20012021046.databinding.NoteEditViewBinding
+import com.example.madpractical11_20012021046.databinding.CustomDialogViewBinding
+//import com.example.madpractical11_20012021046.databinding.NoteViewDesignBinding
+//import com.example.madpractical11_20012021046.databinding.ActivityMainBinding
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -44,12 +47,12 @@ class MainActivity : AppCompatActivity() {
 
         notesRecycleAdapter = NotesAdapter(this, notesList)
         val mLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(applicationContext)
-        binding.listView1.layoutManager = mLayoutManager
-        binding.listView1.itemAnimator = DefaultItemAnimator()
-        binding.listView1.setHasFixedSize(true)
-        binding.listView1.adapter = notesRecycleAdapter
-        setSupportActionBar(binding.toolbar)
-        binding.fab.setOnClickListener {
+        binding.recyclerView.layoutManager = mLayoutManager
+        binding.recyclerView.itemAnimator = DefaultItemAnimator()
+        binding.recyclerView.setHasFixedSize(true)
+        binding.recyclerView.adapter = notesRecycleAdapter
+
+        binding.addNote.setOnClickListener {
             showAlertDialog(
                 NoteMode.add, "Add Note",
                 Note("", "", "", Note.getCurrentDateTime()), -1, notesRecycleAdapter
@@ -116,14 +119,14 @@ class MainActivity : AppCompatActivity() {
         position: Int,
         baseListAdapter: NotesAdapter
     ) {
-        val builder = AlertDialog.Builder(this)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle(dialogTitle)
         // set the custom layout
-        val binding = NoteEditViewBinding.inflate(LayoutInflater.from(this))
-        binding.noteTitle.setText(note.title)
-        binding.noteSubTitle.setText(note.subTitle)
-        binding.noteDescription.setText(note.Description)
-        binding.reminderSwitch.isChecked = note.isReminder
+        val binding = CustomDialogViewBinding.inflate(LayoutInflater.from(this))
+        binding.ntTitle.setText(note.title)
+        binding.ntSubTitle.setText(note.subTitle)
+        binding.ntDescription.setText(note.description)
+        binding.reminderSwitch.isChecked = note.isReminderEnable
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             binding.reminderTime.hour = note.getHour()
             binding.reminderTime.minute = note.getMinute()
@@ -139,15 +142,15 @@ class MainActivity : AppCompatActivity() {
             "OK"
         ) { _, _ ->
             val newNote = Note(note)
-            newNote.title = binding.noteTitle.text.toString()
-            newNote.subTitle = binding.noteSubTitle.text.toString()
-            newNote.Description = binding.noteDescription.text.toString()
-            newNote.isReminder = binding.reminderSwitch.isChecked
+            newNote.title = binding.ntTitle.text.toString()
+            newNote.subTitle = binding.ntSubTitle.text.toString()
+            newNote.description = binding.ntDescription.text.toString()
+            newNote.isReminderEnable = binding.reminderSwitch.isChecked
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                newNote.remindertime = Note.getMillis(binding.reminderTime.hour, binding.reminderTime.minute)
+                newNote.reminderTime = Note.getMillis(binding.reminderTime.hour, binding.reminderTime.minute)
             else
-                newNote.remindertime = Note.getMillis(binding.reminderTime.currentHour, binding.reminderTime.currentMinute)
+                newNote.reminderTime = Note.getMillis(binding.reminderTime.currentHour, binding.reminderTime.currentMinute)
             Log.i(TAG, "showAlertDialog: OK Button:: Note:$newNote")
             listener?.invoke(newNote, baseListAdapter, mode, position)
         }

@@ -5,18 +5,19 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.os.Parcel
+import android.os.Parcelable
 import java.io.Serializable
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-
 enum class NoteMode{
     edit,
     add
 }
-class Note(var title:String, var subTitle:String, var Description:String, var modifiedTime:String, var isReminder: Boolean = false):Serializable
+class Note(var title:String, var subTitle:String, var description:String, var modifiedTime:String, var isReminderEnable: Boolean = false):Serializable
 {
-    var remindertime:Long = System.currentTimeMillis()
+    var reminderTime:Long = System.currentTimeMillis()
     var id = noteIdGeneration()
         set(value) {
             field = value
@@ -26,12 +27,12 @@ class Note(var title:String, var subTitle:String, var Description:String, var mo
 
     constructor():this("","","","")
     {    }
-    constructor(note: Note) : this(note.title,note.subTitle,note.Description,note.modifiedTime,note.isReminder) {
-        remindertime = note.remindertime
+    constructor(note: Note) : this(note.title,note.subTitle,note.description,note.modifiedTime,note.isReminderEnable) {
+        reminderTime = note.reminderTime
     }
 
     fun isValid() :Boolean{
-        if(title.isEmpty() || Description.isEmpty())
+        if(title.isEmpty() || description.isEmpty())
             return false
         return true
     }
@@ -39,42 +40,42 @@ class Note(var title:String, var subTitle:String, var Description:String, var mo
     {
         title = newValue.title
         subTitle = newValue.subTitle
-        Description = newValue.Description
+        description = newValue.description
         modifiedTime = newValue.modifiedTime
-        isReminder = newValue.isReminder
-        remindertime = newValue.remindertime
+        isReminderEnable = newValue.isReminderEnable
+        reminderTime = newValue.reminderTime
     }
     fun getReminderText() :String
     {
         return "Reminder: "+(SimpleDateFormat("MMM, dd yyyy hh:mm a") as DateFormat).format(
-            Date(remindertime)
+            Date(reminderTime)
         )
     }
     fun saveNote(context: Context)
     {
-        if(isReminder)
+        if(isReminderEnable)
         {
             setReminder(context,this)
         }
     }
     fun getHour():Int{
         val cal = Calendar.getInstance()
-        cal.time = Date(remindertime)
+        cal.time = Date(reminderTime)
         return cal[Calendar.HOUR_OF_DAY]
     }
     fun getMinute():Int{
         val cal = Calendar.getInstance()
-        cal.time = Date(remindertime)
+        cal.time = Date(reminderTime)
         return cal[Calendar.MINUTE]
     }
     fun calcReminder()
     {
-        if(remindertime < System.currentTimeMillis())
-            isReminder = false
+        if(reminderTime < System.currentTimeMillis())
+            isReminderEnable = false
     }
 
     override fun toString(): String {
-        return "$id\n"+title +"\n"+subTitle +"\n"+Description+"\nReminder:$isReminder" +"\n"+getReminderText()
+        return "$id\n"+title +"\n"+subTitle +"\n"+description+"\nReminder:$isReminderEnable" +"\n"+getReminderText()
     }
 
 
@@ -112,18 +113,18 @@ class Note(var title:String, var subTitle:String, var Description:String, var mo
             intent.putExtra(NOTE_ID_KEY, note.id)
             intent.putExtra(NOTE_TITLE_KEY, note.title)
             intent.putExtra(NOTE_SUBTITLE_KEY, note.subTitle)
-            intent.putExtra(NOTE_DESCRIPTION_KEY, note.Description)
+            intent.putExtra(NOTE_DESCRIPTION_KEY, note.description)
             intent.putExtra(NOTE_MODIFIED_TIME_KEY, note.modifiedTime)
-            intent.putExtra(NOTE_REMINDER_TIME_KEY, note.remindertime)
+            intent.putExtra(NOTE_REMINDER_TIME_KEY, note.reminderTime)
 
             val pendingIntent =
-                PendingIntent.getBroadcast(context, note.id, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                PendingIntent.getBroadcast(context, note.id, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_CANCEL_CURRENT)
             val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
 
-            if(note.isReminder) {
+            if(note.isReminderEnable) {
                 alarmManager.setExact(
                     AlarmManager.RTC_WAKEUP,
-                    note.remindertime,
+                    note.reminderTime,
                     pendingIntent
                 )
             }

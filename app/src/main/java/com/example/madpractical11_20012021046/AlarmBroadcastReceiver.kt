@@ -21,16 +21,16 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             note.id = intent.getIntExtra(Note.NOTE_ID_KEY, -1)
             note.title = intent.getStringExtra(Note.NOTE_TITLE_KEY)!!
             note.subTitle = intent.getStringExtra(Note.NOTE_SUBTITLE_KEY)!!
-            note.Description = intent.getStringExtra(Note.NOTE_DESCRIPTION_KEY)!!
+            note.description = intent.getStringExtra(Note.NOTE_DESCRIPTION_KEY)!!
             note.modifiedTime = intent.getStringExtra(Note.NOTE_MODIFIED_TIME_KEY)!!
-            note.remindertime = intent.getLongExtra(Note.NOTE_REMINDER_TIME_KEY, 0)
-            note.isReminder = true
+            note.reminderTime = intent.getLongExtra(Note.NOTE_REMINDER_TIME_KEY, 0)
+            note.isReminderEnable = true
             Log.i(TAG, "onReceive: Note: $note")
             notificationDialog(
                 context,
                 NoteViewActivity::class.java,
                 note.title,
-                note.Description,
+                note.description,
                 note
             )
         }
@@ -58,7 +58,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
         notificationIntent.putExtra("Object", note as Serializable)
         val pendingIntent = PendingIntent.getActivity(
             context, Note.REMINDER_REQUEST_CODE, notificationIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         )
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         notificationBuilder.setAutoCancel(true)

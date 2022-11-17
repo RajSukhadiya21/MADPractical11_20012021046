@@ -7,16 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.madpractical11_20012021046.databinding.NoteItemViewBinding
-
+import com.example.madpractical11_20012021046.databinding.NoteViewDesignBinding
 import java.io.Serializable
 
 class NotesAdapter (private val context: Context, private val array:ArrayList<Note>):
     RecyclerView.Adapter<NotesAdapter.NotesViewHolder>() {
-    inner class NotesViewHolder(val binding: NoteItemViewBinding): RecyclerView.ViewHolder(binding.root)
+    inner class NotesViewHolder(val binding: NoteViewDesignBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
-        val binding = NoteItemViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = NoteViewDesignBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NotesViewHolder(binding)
     }
 
@@ -24,28 +23,28 @@ class NotesAdapter (private val context: Context, private val array:ArrayList<No
         with(holder){
             with(array[position]){
                 binding.noteTitle.text = this.title
-                binding.noteSubtitle.text = this.subTitle
-                binding.noteContent.text = this.Description
-                binding.noteDate.text = this.modifiedTime
+                binding.noteSubTitle.text = this.subTitle
+                binding.noteContent.text = this.description
+                binding.noteReminder.text = this.modifiedTime
                 val obj = this as Serializable
                 this.calcReminder()
-                if(this.isReminder)
+                if(this.isReminderEnable)
                 {
-                    binding.noteReminderDateTime.visibility = View.VISIBLE
-                    binding.noteReminderDateTime.text = this.getReminderText()
+                    binding.noteReminder.visibility = View.VISIBLE
+                    binding.noteReminder.text = this.getReminderText()
                 }
                 else
-                    binding.noteReminderDateTime.visibility = View.GONE
-                binding.imgDelete.setOnClickListener{
+                    binding.noteReminder.visibility = View.GONE
+                binding.deleteNote.setOnClickListener{
                     (context as MainActivity).deleteNote(position)
                 }
-                binding.cardNote.setOnClickListener {
+                binding.cardView.setOnClickListener {
                     Intent(this@NotesAdapter.context, NoteViewActivity::class.java).apply {
                         putExtra("Object",obj)
                         this@NotesAdapter.context.startActivity(this)
                     }
                 }
-                binding.imgEdit.setOnClickListener {
+                binding.editNote.setOnClickListener {
                     (context as MainActivity).showAlertDialog(
                         NoteMode.edit,
                         "Edit Note",

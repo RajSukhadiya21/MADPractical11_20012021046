@@ -16,20 +16,20 @@ class NoteViewActivity : AppCompatActivity() {
         note = intent.getSerializableExtra("Object") as Note
         binding = ActivityNoteViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
-            with(note){
-                binding.noteTitle.text = this.title
-                binding.noteSubtitle.text = this.subTitle
-                binding.noteContent.text = this.Description
-                binding.noteDate.text = this.modifiedTime
-                this.calcReminder()
-                if(this.isReminder)
-                {
-                    binding.noteReminderDateTime.visibility = View.VISIBLE
-                    binding.noteReminderDateTime.text = this.getReminderText()
-                }
-                else
-                    binding.noteReminderDateTime.visibility = View.GONE
+
+        with(note){
+            binding.noteTitle.text = this.title
+            binding.noteSubtitle.text = this.subTitle
+            binding.noteDescription.text = this.description
+            binding.noteDate.text = this.modifiedTime
+            this.calcReminder()
+            if(this.isReminderEnable)
+            {
+                binding.noteReminder.visibility = View.VISIBLE
+                binding.noteReminder.text = this.getReminderText()
             }
+            else
+                binding.noteReminder.visibility = View.GONE
+        }
     }
 }

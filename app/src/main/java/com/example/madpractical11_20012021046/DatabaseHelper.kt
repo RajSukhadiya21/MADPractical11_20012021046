@@ -5,9 +5,9 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import java.util.ArrayList
 
-class DatabaseHelper(context: Context?) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DatabaseHelper(context: Context?) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         // Database Version
         private const val DATABASE_VERSION = 1
@@ -42,9 +42,9 @@ class DatabaseHelper(context: Context?) :
         // no need to add them
         values.put(NotesData.COLUMN_NOTE_TITLE, note.title)
         values.put(NotesData.COLUMN_NOTE_SUB_TITLE, note.subTitle)
-        values.put(NotesData.COLUMN_NOTE_DESCRIPTION, note.Description)
-        values.put(NotesData.COLUMN_NOTE_REMINDER_TIME, note.remindertime)
-        values.put(NotesData.COLUMN_NOTE_SET_REMINDER, note.isReminder)
+        values.put(NotesData.COLUMN_NOTE_DESCRIPTION, note.description)
+        values.put(NotesData.COLUMN_NOTE_REMINDER_TIME, note.reminderTime)
+        values.put(NotesData.COLUMN_NOTE_SET_REMINDER, note.isReminderEnable)
         values.put(NotesData.COLUMN_TIMESTAMP, note.modifiedTime)
         return values
     }
@@ -83,8 +83,8 @@ class DatabaseHelper(context: Context?) :
             cursor.getString(cursor.getColumnIndexOrThrow(NotesData.COLUMN_NOTE_DESCRIPTION)),
             cursor.getString(cursor.getColumnIndexOrThrow(NotesData.COLUMN_TIMESTAMP))
         )
-        note.isReminder = (cursor.getInt(cursor.getColumnIndexOrThrow(NotesData.COLUMN_NOTE_SET_REMINDER))==1)
-        note.remindertime = cursor.getLong(cursor.getColumnIndexOrThrow(NotesData.COLUMN_NOTE_REMINDER_TIME))
+        note.isReminderEnable = (cursor.getInt(cursor.getColumnIndexOrThrow(NotesData.COLUMN_NOTE_SET_REMINDER))==1)
+        note.reminderTime = cursor.getLong(cursor.getColumnIndexOrThrow(NotesData.COLUMN_NOTE_REMINDER_TIME))
         note.id = cursor.getInt(cursor.getColumnIndexOrThrow(NotesData.COLUMN_ID))
         return note
     }
